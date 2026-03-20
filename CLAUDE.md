@@ -30,20 +30,23 @@
 
 ```
 timetable/
-├── index.html       # 메인 진입점 (HTML 구조 + 스크립트 로드)
-├── style.css        # 시간표 레이아웃 및 전체 UI 스타일
-├── firebase.js      # Firebase 초기화 및 DB 헬퍼 함수
-├── app.js           # 앱 로직 (렌더링, 모달, 이벤트 처리)
-└── CLAUDE.md
+├── index.html                    # 메인 진입점 (HTML 구조 + 스크립트 로드)
+├── style.css                     # 시간표 레이아웃 및 전체 UI 스타일
+├── firebase.js                   # Firebase 초기화 및 DB 헬퍼 함수
+├── firebase-config.js            # Firebase 설정값 (gitignore 처리, 공유 금지)
+├── firebase-config.example.js   # 설정 예시 파일 (git에 포함)
+└── app.js                        # 앱 로직 (렌더링, 모달, 이벤트 처리)
 ```
+
+> `firebase-config.js`는 `.gitignore`에 등록되어 있으므로 git에 올라가지 않음.
+> 새로 클론한 경우 `firebase-config.example.js`를 복사해 설정값을 채워야 함.
 
 ---
 
 ## Firebase 설정
 
-### firebase.js 구조
-Firebase 프로젝트 설정값을 이 파일에만 집중시킨다.
-`firebaseConfig`는 Firebase 콘솔에서 복사한 실제 값으로 교체 필요.
+### firebase-config.js 구조
+Firebase 설정값은 `firebase-config.js`에만 집중시킨다. 이 파일은 gitignore 처리되어 있음.
 
 ```js
 const firebaseConfig = {
@@ -51,18 +54,27 @@ const firebaseConfig = {
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
+  storageBucket: "YOUR_PROJECT.firebasestorage.app",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
+```
 
+### firebase.js 구조
+`firebase-config.js`가 먼저 로드된 뒤 `firebaseConfig`를 사용해 초기화한다.
+
+```js
+// firebaseConfig는 firebase-config.js 에서 로드 (gitignore 처리)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// DB 헬퍼
 const eventsRef = db.ref('/events');
 
-function dbAdd(event) { return eventsRef.push(event); }
+// Firebase push key를 id 필드에도 함께 저장
+function dbAdd(event) {
+  const ref = eventsRef.push();
+  return ref.set({ ...event, id: ref.key });
+}
 function dbUpdate(id, event) { return eventsRef.child(id).set(event); }
 function dbRemove(id) { return eventsRef.child(id).remove(); }
 function dbSubscribe(callback) { eventsRef.on('value', snap => callback(snap.val())); }
@@ -176,13 +188,20 @@ Firebase 경로: `/events/{pushKey}`
 
 ## 구현 시 주의사항
 
-- CDN 로드 순서 필수: `firebase-app-compat` → `firebase-database-compat` → `firebase.js` → `app.js`
+- CDN 로드 순서 필수: `firebase-app-compat` → `firebase-database-compat` → `html2canvas` → `firebase-config.js` → `firebase.js` → `app.js`
 - 시간 → 슬롯 변환: `(hour - 8) * 2 + (min >= 30 ? 1 : 0)`
 - 슬롯 → 시간 변환: `hour = 8 + Math.floor(slot/2)`, `min = slot%2 === 0 ? '00' : '30'`
 - Firebase `snap.val()`은 데이터 없을 때 `null` 반환 → null 체크 필수
 - Firebase push key는 `-N`으로 시작하는 문자열 → id 필드에도 동일값 저장
-- 전체 span 블록은 `#timetable-container`에 absolute로 붙이되, 첫 번째 day-cell의 `offsetLeft`, `offsetTop` 기준으로 위치 계산
+- 전체 span 블록은 `#timetable-body`에 absolute로 붙이되, 첫 번째 day-cell의 `offsetLeft`, `offsetTop` 기준으로 위치 계산
 - html2canvas 캡처 대상: `#timetable-wrapper` (카드 전체)
+
+---
+
+## GitHub 레포지토리
+
+- URL: https://github.com/koyoungman/weekly-planner
+- 기본 브랜치: `develop`
 
 ---
 
