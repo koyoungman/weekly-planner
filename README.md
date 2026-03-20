@@ -47,6 +47,19 @@ timetable/
 
 3. `firebase-config.js`에 Firebase 프로젝트 설정값 입력
 
+   ```js
+   const firebaseConfig = {
+     apiKey: "YOUR_API_KEY",
+     authDomain: "YOUR_PROJECT.firebaseapp.com",
+     databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+     projectId: "YOUR_PROJECT_ID",
+     storageBucket: "YOUR_PROJECT.firebasestorage.app",
+     messagingSenderId: "YOUR_SENDER_ID",
+     appId: "YOUR_APP_ID"
+   };
+   ```
+   > Firebase 콘솔 → 프로젝트 설정 → 내 앱에서 확인할 수 있습니다.
+
 4. `index.html`을 브라우저에서 열거나 로컬 서버로 실행
 
 ## Firebase 설정
