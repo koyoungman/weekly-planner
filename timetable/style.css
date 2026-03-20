@@ -1,0 +1,343 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  padding: 24px 16px;
+  color: #333;
+}
+
+/* ── 앱 컨테이너 ── */
+#app {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── 툴바 ── */
+#toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+#toolbar h1 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+#btn-export {
+  background: #4C6EF5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+#btn-export:hover {
+  opacity: 0.85;
+}
+
+/* ── 시간표 카드 ── */
+#timetable-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  overflow-x: auto; /* 모바일 가로 스크롤 */
+}
+
+/* ── 요일 헤더 ── */
+#timetable-header {
+  display: grid;
+  grid-template-columns: 56px repeat(5, 1fr);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #f8f9fb;
+  border-bottom: 2px solid #e4e6eb;
+  min-width: 400px;
+}
+
+.th-time {
+  /* 시간 컬럼 빈 셀 */
+}
+
+.th-day {
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #555;
+  padding: 12px 0;
+}
+
+/* ── 본문 ── */
+#timetable-body {
+  position: relative;
+  min-width: 400px;
+}
+
+/* ── 시간 행 ── */
+.time-row {
+  display: grid;
+  grid-template-columns: 56px repeat(5, 1fr);
+  height: 36px; /* CELL_HEIGHT */
+}
+
+.time-label {
+  font-size: 11px;
+  color: #bbb;
+  text-align: right;
+  padding-right: 8px;
+  line-height: 36px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.day-cell {
+  border-left: 1px solid #ebebeb;
+  border-top: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+/* :30 행은 점선으로 구분 */
+.time-row:nth-child(even) .day-cell {
+  border-top-color: #efefef;
+  border-top-style: dashed;
+}
+
+.day-cell:hover {
+  background: #f0f4ff;
+}
+
+/* ── 일정 블록 ── */
+.event-block {
+  position: absolute;
+  border-radius: 7px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 10;
+  transition: filter 0.15s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-block:hover {
+  filter: brightness(0.93);
+}
+
+.event-block--compact {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-block--compact .event-time {
+  flex-shrink: 0;
+}
+
+.event-title {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.event-time {
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+/* ── 모달 ── */
+dialog {
+  border: none;
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 340px;
+  max-width: 95vw;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+#modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.field input[type="text"],
+.field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field input[type="text"]:focus,
+.field select:focus {
+  border-color: #4C6EF5;
+}
+
+/* 시작/종료 시간 나란히 */
+.time-row-field {
+  display: flex;
+  gap: 12px;
+}
+
+.time-row-field > div {
+  flex: 1;
+}
+
+.time-row-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.time-row-field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+}
+
+/* 요일 체크박스 */
+.day-checks {
+  display: flex;
+  gap: 10px;
+}
+
+.day-checks label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 색상 팔레트 */
+#color-palette {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+  outline: none;
+}
+
+.color-swatch.selected {
+  border-color: #333;
+  transform: scale(1.2);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+#f-color-custom {
+  width: 36px;
+  height: 28px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  padding: 1px;
+  cursor: pointer;
+  background: none;
+}
+
+/* 모달 버튼 영역 */
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.modal-actions button:hover {
+  opacity: 0.85;
+}
+
+#btn-delete {
+  background: #fdecea;
+  color: #c62828;
+  margin-right: auto;
+}
+
+#btn-cancel {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.modal-actions button[type="submit"] {
+  background: #4C6EF5;
+  color: #fff;
+}

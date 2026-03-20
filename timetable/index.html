@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주간 시간표</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+    <div id="toolbar">
+      <h1>주간 시간표</h1>
+      <button id="btn-export">이미지로 저장</button>
+    </div>
+
+    <div id="timetable-wrapper">
+      <!-- 요일 헤더 -->
+      <div id="timetable-header">
+        <div class="th-time"></div>
+        <div class="th-day">월</div>
+        <div class="th-day">화</div>
+        <div class="th-day">수</div>
+        <div class="th-day">목</div>
+        <div class="th-day">금</div>
+      </div>
+      <!-- 시간표 본문 (JS로 rows + event blocks 생성) -->
+      <div id="timetable-body"></div>
+    </div>
+  </div>
+
+  <!-- 일정 추가/편집 모달 -->
+  <dialog id="event-modal">
+    <form id="event-form">
+      <h2 id="modal-title">일정 추가</h2>
+
+      <div class="field">
+        <label for="f-title">제목</label>
+        <input type="text" id="f-title" placeholder="일정 이름을 입력하세요" required>
+      </div>
+
+      <div class="field">
+        <label>요일</label>
+        <div class="day-checks">
+          <label><input type="checkbox" class="day-check" value="mon"> 월</label>
+          <label><input type="checkbox" class="day-check" value="tue"> 화</label>
+          <label><input type="checkbox" class="day-check" value="wed"> 수</label>
+          <label><input type="checkbox" class="day-check" value="thu"> 목</label>
+          <label><input type="checkbox" class="day-check" value="fri"> 금</label>
+        </div>
+      </div>
+
+      <div class="field time-row-field">
+        <div>
+          <label for="f-start">시작 시간</label>
+          <select id="f-start"></select>
+        </div>
+        <div>
+          <label for="f-end">종료 시간</label>
+          <select id="f-end"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>색상</label>
+        <div id="color-palette"></div>
+        <div class="color-custom-row">
+          <span>직접 선택</span>
+          <input type="color" id="f-color-custom" value="#FFD166">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="btn-delete">삭제</button>
+        <button type="button" id="btn-cancel">취소</button>
+        <button type="submit">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- CDN 로드 순서 필수: firebase-app → firebase-database → firebase-config.js → firebase.js → app.js -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="firebase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
